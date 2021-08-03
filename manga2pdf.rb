@@ -8,7 +8,8 @@ module Manga2PDF
             @url = url
             @end_state = false
             @global_count = 1
-            @driver = Selenium::WebDriver.for :firefox
+            @opts = Selenium::WebDriver::Firefox::Options.new(args: ['-headless'])            
+            @driver = Selenium::WebDriver.for(:firefox, options: @opts)
             @driver.get url
         end
         
@@ -40,8 +41,10 @@ module Manga2PDF
         # method to download all images from all volumes
         def get_img_all
             while not @end_state
+                puts "Currently downloading: #{@driver.title}"
                 get_img
                 next_page
+                @global_count += 1
             end
             puts "Finished!"
         end
@@ -50,6 +53,6 @@ module Manga2PDF
 end
 
 if __FILE__ == $0
-    manga = Manga2PDF::MangaIMG.new("https://readmanganato.com/manga-db980758/chapter-157")
+    manga = Manga2PDF::MangaIMG.new("https://readmanganato.com/manga-db980758/chapter-51")
     manga.get_img_all
 end
