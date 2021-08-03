@@ -3,7 +3,7 @@ require 'uri'
 
 module Manga2PDF
     class MangaIMG
-        def initialize(url, mkdir = true)
+        def initialize(url, mkdir)
             @url = url
             @end_state = false
             @global_count = 1
@@ -68,19 +68,24 @@ end
 if __FILE__ == $0
     url = nil
     mkdir = nil
-    if ARGV.length < 1
-        raise "At least 1 argument is needed to run the script."
+    if ARGV.length < 2
+        raise "At least the url is needed for the script to run. Eg: ruby manga2pdf -u <url>."
     end
 
-    if ARGV.length == 1
-        url = ARGV[0]
+    for i in 0..ARGV.length
+        if ARGV[i] == "-u"
+            url = ARGV[i+1]
+            i+=1
+        end
+
+        if ARGV[i] == "-d"
+            mkdir = true
+        end
     end
 
-    if ARGV.length == 2
-        url = ARGV[0]
-        mkdir = true if ARGV[1] == "true"
+    if url.nil? and mkdir.nil? 
+        raise "URL was not provided."
     end
-
 
     manga = Manga2PDF::MangaIMG.new(url,mkdir)
     manga.get_img_all
