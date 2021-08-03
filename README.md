@@ -1,11 +1,12 @@
 # manga2pdf
 Simple script to download and merge manga images into a single pdf file. Uses Ruby and Selenium.
+Works with manga from Manganato.
 It's currently WIP and in a very early stage.
 
 ### Requirements
 * Ruby 2.7
 * selenium-webdriver 4.0 (currently in beta)
-* firefox-geckodriverd
+* firefox-geckodriver
 
 ### Usage
 Launch the script like this:
