@@ -23,17 +23,33 @@ module Manga2PDF
                 index += 1
             end
         end
-        # avanzar a la siguiente pagina
-        # siguiente_boton = driver.find_element(link_text: 'NEXT CHAPTER').click
-        # if not siguiente_boton then
-        #     finalizado = true
-        # else
-        #     siguiente_boton.click
-        # end
+
+        # method to navigate to the next page
+
+        def next_page
+            begin
+                next_btn = @driver.find_element(link_text: 'NEXT CHAPTER')
+            rescue
+                @end_state = true
+            end
+            if not @end_state
+                next_btn.click
+            end 
+        end
+
+        # method to download all images from all volumes
+        def get_img_all
+            while not @end_state
+                get_img
+                next_page
+            end
+            puts "Finished!"
+        end
+
     end
 end
 
 if __FILE__ == $0
-    manga = Manga2PDF::MangaIMG.new("https://readmanganato.com/manga-db980758/chapter-51")
-    manga.get_img
+    manga = Manga2PDF::MangaIMG.new("https://readmanganato.com/manga-db980758/chapter-157")
+    manga.get_img_all
 end
