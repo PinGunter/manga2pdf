@@ -23,6 +23,7 @@ module Manga2PDF
       if savefile[savefile.length-4, savefile.length] != ".pdf"
         return (savefile + ".pdf")
       end
+      savefile
     end
 
     # method to "download" all images
