@@ -5,10 +5,12 @@ It's currently WIP and in a very early stage.
 
 ### Requirements
 * Ruby 2.7
-* selenium-webdriver 4.0 (currently in beta)
+* make
+* ImageMagick and libmagickwand-dev
 * firefox-geckodriver
-* ruby-progressbar
-* rmagick
+* selenium-webdriver 4.0 gem (currently in beta)
+* ruby-progressbar gem
+* rmagick gem
 
 You may get a "security policy" ImageMagick error. In this case add to `etc/ImageMagick-6/policy.xml` the following line just before `</policymap>`:
 ```
