@@ -10,7 +10,7 @@ It's currently WIP and in a very early stage.
 * ruby-progressbar
 * rmagick
 
-You may get a "security policy" ImageMagick error. In this case add to `etc/ImageMagick-6/policy.xml` the following line:
+You may get a "security policy" ImageMagick error. In this case add to `etc/ImageMagick-6/policy.xml` the following line just before `</policymap>:
 ```
 <policy domain="coder" rights="read | write" pattern="PDF" />
 ```
