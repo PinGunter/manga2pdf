@@ -37,10 +37,10 @@ And follow the GUI.
 ### Screenshots
 #### CLI
 
-![](/home/salva/manga2pdf/screenshots/manga2pdf.png)
+![](screenshots/manga2pdf.png)
 
 
 #### GUI
 
-![](/home/salva/manga2pdf/screenshots/manga2pdf-gui.png)
+![](creenshots/manga2pdf-gui.png)
 
