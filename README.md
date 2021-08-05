@@ -42,5 +42,5 @@ And follow the GUI.
 
 #### GUI
 
-![](creenshots/manga2pdf-gui.png)
+![](screenshots/manga2pdf-gui.png)
 
