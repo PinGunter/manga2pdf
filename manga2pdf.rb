@@ -10,7 +10,7 @@ module Manga2PDF
       @end_state = false
       @global_count = 0
       @opts = Selenium::WebDriver::Firefox::Options.new(args: ['-headless'])
-      @driver = Selenium::WebDriver.for(:firefox, options: @opts)
+      @driver = Selenium::WebDriver.for(:firefox, capabilities: @opts)
       @driver.get @url
       @mkdir = mkdir
       @current_title = @driver.find_element(tag_name: 'h1').text
