@@ -1,0 +1,37 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    array_include_methods (1.4.0)
+    childprocess (4.1.0)
+    color (1.8)
+    facets (3.1.0)
+    glimmer (2.3.0)
+      array_include_methods (~> 1.4.0)
+      facets (>= 3.1.0, < 4.0.0)
+    glimmer-dsl-libui (0.2.10)
+      color (~> 1.8)
+      glimmer (~> 2.3.0)
+      libui (~> 0.0.11)
+      os (>= 1.0.0, < 2.0.0)
+    libui (0.0.11)
+    os (1.1.1)
+    rexml (3.2.5)
+    rmagick (4.2.2)
+    ruby-progressbar (1.11.0)
+    rubyzip (2.3.2)
+    selenium-webdriver (4.0.0.rc3)
+      childprocess (>= 0.5, < 5.0)
+      rexml (~> 3.2)
+      rubyzip (>= 1.2.2)
+
+PLATFORMS
+  x86_64-darwin-20
+
+DEPENDENCIES
+  glimmer-dsl-libui
+  rmagick
+  ruby-progressbar
+  selenium-webdriver (~> 4.0.0.beta4)
+
+BUNDLED WITH
+   2.2.28

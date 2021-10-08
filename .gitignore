@@ -1,3 +1,7 @@
 /geckodriver.log
 /main.py
 /test.rb
+.ruby-version
+.ruby-gemset
+# Gladiator (Glimmer Editor)
+.gladiator
