@@ -2,7 +2,7 @@ require 'selenium-webdriver'
 require 'uri'
 require 'ruby-progressbar'
 require 'rmagick'
-require 'libui'
+require 'glimmer-dsl-libui'
 
 module Manga2PDF
   class MangaIMG
@@ -88,134 +88,115 @@ module Manga2PDF
       puts "Finished downloading!"
     end
   end
-end
-
-UI = LibUI
-
-init = UI.init
-
-url, mkdir, chlimit, chlimit_toggle, savefile = nil, nil, 1, nil, nil
-inner_thread = nil
-running = false
-
-should_quit = proc do
-  puts 'Bye Bye'
-  inner_thread.exit
-  UI.control_destroy(MAIN_WINDOW)
-  UI.quit
-  0
-end
-
-# Main Window
-MAIN_WINDOW = UI.new_window('Manga2PDF - GUI', 600, 200, 1)
-UI.window_set_margined(MAIN_WINDOW, 1)
-UI.window_on_closing(MAIN_WINDOW, should_quit)
-
-hbox = UI.new_horizontal_box
-UI.window_set_child(MAIN_WINDOW,hbox)
-hbox = UI.new_horizontal_box
-UI.box_set_padded(hbox, 1)
-
-vbox = UI.new_vertical_box
-UI.window_set_child(MAIN_WINDOW, vbox)
-hbox = UI.new_horizontal_box
-UI.box_set_padded(vbox, 1)
-UI.box_set_padded(hbox, 1)
-
-UI.box_append(vbox, hbox, 1)
-
-group = UI.new_group('Manga2PDF')
-UI.group_set_margined(group, 1)
-UI.box_append(hbox, group, 1) # OSX bug?
-
-entry = UI.new_entry
-UI.entry_on_changed(entry) do
-  url = UI.entry_text(entry).to_s
-end
-
-entry2 = UI.new_entry
-UI.entry_on_changed(entry2) do
-  savefile = UI.entry_text(entry2).to_s
-end
-inner = UI.new_vertical_box
-UI.box_set_padded(inner, 1)
-UI.group_set_child(group, inner)
-group = UI.new_group('Enter the URL:')
-UI.group_set_margined(group, 1)
-UI.box_append(inner, group, 1)
-UI.box_append(inner,entry,0)
-group = UI.new_group('Savefile name:')
-UI.group_set_margined(group, 1)
-UI.box_append(inner, group, 1)
-
-
-UI.box_append(inner,entry2,0)
-
-# Checkbox
-checkbox = UI.new_checkbox('Have separate folders for each chapter?')
-UI.checkbox_on_toggled(checkbox) do |ptr|
-  mkdir = UI.checkbox_checked(ptr) == 1
-end
-UI.box_append(inner, checkbox, 0)
-
-checkbox2 = UI.new_checkbox('Download only a number of chapters')
-UI.checkbox_on_toggled(checkbox2) do |ptr|
-  chlimit_toggle = UI.checkbox_checked(ptr) == 1
-end
-
-group = UI.new_group('Max number of chapters')
-UI.group_set_margined(group, 1)
-UI.box_append(inner, group, 0)
-
-# Spinbox
-spinbox = UI.new_spinbox(1,9999)
-UI.spinbox_set_value(spinbox, 1)
-UI.spinbox_on_changed(spinbox) do |ptr|
-  chlimit = UI.spinbox_value(ptr)
-end
-UI.box_append(inner, checkbox2, 0)
-UI.box_append(inner, spinbox, 0)
-
-# Progressbar
-progressbar = UI.new_progress_bar
-
-inner2 = UI.new_vertical_box
-UI.box_set_padded(inner2, 1)
-# Button
-button = UI.new_button('Download')
-label = UI.new_label("Waiting")
-UI.button_on_clicked(button) do
-  if not running
-    running = true
-      inner_thread = Thread.new{
-        UI.label_set_text(label,"Initializing WebScraper")
-        UI.progress_bar_set_value(progressbar, 5)
-        chlimit = nil if not chlimit_toggle
-        manga = Manga2PDF::MangaIMG.new(url,mkdir,chlimit,savefile)
-        UI.label_set_text(label,"Moving to #{url}")
-        UI.progress_bar_set_value(progressbar, 15)
-        UI.label_set_text(label,"Downloading images")
-        manga.get_img_all
-        UI.label_set_text(label,"Finished downloading images")
-        UI.progress_bar_set_value(progressbar, 75)
-        UI.label_set_text(label,"Merging images")
-        manga.merge_to_pdf
-        UI.progress_bar_set_value(progressbar, 100)
-        UI.label_set_text(label,"Finished! You can close the window now")
-      }
+  
+  class MangaGUI
+    include Glimmer
+    
+    def initialize
+      @url, @mkdir, @chlimit, @chlimit_toggle, @savefile = nil, nil, 1, nil, nil
+      @inner_thread = nil
+      @running = false
+    end
+    
+    def launch
+      window('Manga2PDF - GUI', 600, 200) {
+        on_closing do
+          @inner_thread.exit
+        end
+        
+        margined true
+        
+        vertical_box {
+          horizontal_box {
+            group('Manga2PDF') {
+              vertical_box {
+                group('Enter the URL:')
+                @entry = entry {
+                  stretchy false
+                  
+                  on_changed do
+                    @url = @entry.text
+                  end
+                }
+                group('Savefile name:')
+                @entry2 = entry {
+                  stretchy false
+                  
+                  on_changed do
+                    @savefile = @entry2.text
+                  end
+                }
+                @checkbox = checkbox('Have separate folders for each chapter?') {
+                  stretchy false
+                  
+                  on_toggled do
+                    @mkdir = @checkbox.checked?
+                  end
+                }
+                group('Max number of chapters')
+                @checkbox2 = checkbox('Download only a number of chapters') {
+                  stretchy false
+                  
+                  on_toggled do
+                    @chlimit_toggle = @checkbox2.checked?
+                  end
+                }
+                @spinbox = spinbox(1,9999) {
+                  stretchy false
+                  value 1
+                  
+                  on_changed do
+                    @chlimit = @spinbox.value
+                  end
+                }
+                @button = button('Download') {
+                  stretchy false
+                  
+                  on_clicked do
+                    if not @running
+                      @running = true
+                      @inner_thread = Thread.new do
+                        Glimmer::LibUI.queue_main do
+                          @label.text = "Initializing WebScraper"
+                          @progressbar.value = 5
+                        end
+                        @chlimit = nil if not @chlimit_toggle
+                        @manga = Manga2PDF::MangaIMG.new(@url,@mkdir,@chlimit,@savefile)
+                        Glimmer::LibUI.queue_main do
+                          @label.text = "Moving to #{@url}"
+                          @progressbar.value = 15
+                          @label.text = "Downloading images"
+                        end
+                        @manga.get_img_all
+                        Glimmer::LibUI.queue_main do
+                          @label.text = "Finished downloading images"
+                          @progressbar.value = 75
+                          @label.text = "Merging images"
+                        end
+                        @manga.merge_to_pdf
+                        Glimmer::LibUI.queue_main do
+                          @progressbar.value = 100
+                          @label.text = "Finished! You can close the window now"
+                        end
+                        @running = false
+                      end
+                    end
+                  end
+                }
+                @progressbar = progress_bar {
+                  stretchy false
+                }
+                @label = label("Waiting") {
+                  stretchy false
+                }
+              }
+            }
+          }
+        }
+      }.show
+      @inner_thread.join
+    end
   end
-
 end
-UI.box_append(inner, button, 0)
-UI.box_append(inner, progressbar, 0)
-UI.box_append(inner,label,0)
 
-
-UI.control_show(MAIN_WINDOW)
-
-UI.main
-inner_thread.join
-
-UI.quit
-
-
+Manga2PDF::MangaGUI.new.launch
